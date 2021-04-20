@@ -1,0 +1,23 @@
+DOCKER TEMPLATE:
+
+            _____ NGINX _____
+           |                 |
+         DJANGO            FLASK
+           |____ POSTGRES ___|
+
+Django y Flask se comunican con NGINX a través de GUNICORN
+Django y Flask se comunican con POSTGRES a traves de psycopg2
+
+LOAD BALANCING
+Django actualmente tiene balanceo de carga con [django_app y django_app_2]
+
+NGINX PORTS: 80:80  443:443
+Django PORTS: 8000  8001
+Flask PORTS: 7000
+
+*Para que funcionen los nombres de dominio tienen que 
+agregar los nombres a vuestro archivo
+    LINUX:  "/etc/hosts"
+    WINDOWS: "C:\Windows\ System32\drivers\etc\hosts"
+DJANGO HOSTS=localhost,127.0.0.1,web01.es,www.web01.es
+FLASK HOSTS=web-flask.es, www.web-flask.es

@@ -1,0 +1,16 @@
+version: "3"
+
+services: 
+  flask:
+    build: .
+    volumes: 
+      - ./app:/app:rw
+    ports: 
+      - 7000:7000
+    command: >
+      /bin/sh -c "python3 app.py"
+     # /bin/sh -c "python3 app.py"
+     # bash -c "
+     # ls -la /etc/nginx/
+     # && cat /etc/nginx/mime.types
+     # "

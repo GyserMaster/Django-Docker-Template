@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  # DB_HOST=db se encuentra en .env y en settings.py en DATABASES apunta al HOST
+  db:
+    image: postgres:13.1
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  django_app:
+    build: .
+    env_file: .env
+    volumes: 
+      - .:/code
+      - static:/code/static/static
+      - media:/code/static/media
+    depends_on: 
+      - db
+
+  nginx:
+    image: nginx:1.13
+    ports: 
+      - 8008:80
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - static:/code/static/static
+      - media:/code/static/media
+    depends_on: 
+      - django_app
+
+volumes:
+  postgres_data:
+  static:
+  media:
+
+# docker-compose -f docker-compose-deploy.yml up --build
+# docker-compose -f docker-compose-deploy.yml down -v
+# docker-compose -f docker-compose-deploy.yml exec django_app python ./app/manage.py migrate
+# docker-compose -f docker-compose-deploy.yml exec django_app python ./app/manage.py createsuperuser --username Gyser --email "gyser.world@gmail.com"

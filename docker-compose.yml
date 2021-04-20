@@ -1,0 +1,65 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:13.1
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  django_app:
+    build: ./app
+    env_file: .env
+    environment: 
+      - GUNICORN_PORT=8000
+    volumes: 
+      - ./app:/code:rw
+      - static:/code/static/static
+      - media:/code/static/media
+    depends_on: 
+      - db
+
+  django_app_2:
+    build: ./app
+    env_file: .env
+    environment: 
+      - GUNICORN_PORT=8001
+    volumes: 
+      - ./app:/code:rw
+      - static:/code/static/static
+      - media:/code/static/media
+    depends_on: 
+      - db
+
+  flask:
+    build: ./app-flask
+    volumes: 
+      - ./app-flask/app:/app:rw
+    command: gunicorn --bind 0.0.0.0:7000 --workers 2 --name flaskapp "app:myapp()"
+    depends_on: 
+      - db
+
+  nginx:
+    #image: nginx:1.13 
+    build: ./config/nginx
+    restart: always
+    ports: 
+      - 80:80
+      - 443:443
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d:rw
+      - static:/code/static/static
+      - media:/code/static/media
+
+volumes:
+  postgres_data:
+  static:
+  media:
+
+# docker-compose exec django_app_devel python .manage.py migrate
+# docker-compose exec django_app_devel python manage.py createsuperuser --username Gyser --email "gyser.world@gmail.com"
+    #command: >
+     # bash -c "
+     # ls -la /etc/nginx/
+     # && cat /etc/nginx/mime.types
+     # "
